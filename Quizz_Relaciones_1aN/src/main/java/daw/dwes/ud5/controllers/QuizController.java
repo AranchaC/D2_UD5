@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import daw.dwes.ud5.entities.Clasificacion;
 import daw.dwes.ud5.entities.Resultado;
+import daw.dwes.ud5.entities.Jugador;
+import daw.dwes.ud5.respositories.JugadorRepository;
 import daw.dwes.ud5.respositories.ResultadoRepository;
 import jakarta.servlet.http.HttpSession;
 
@@ -25,10 +27,14 @@ import jakarta.servlet.http.HttpSession;
 public class QuizController {
 	
     private final ResultadoRepository resultadoRepositorio;
+    private final JugadorRepository jugadorRepository;
     
     @Autowired
-    public QuizController(ResultadoRepository resultadoRepositorio) {
+    public QuizController(
+    		ResultadoRepository resultadoRepositorio,
+    		JugadorRepository jugadorRepository) {
     	this.resultadoRepositorio = resultadoRepositorio;
+    	this.jugadorRepository = jugadorRepository;
     }
 	
 	@GetMapping("/")
@@ -262,24 +268,33 @@ public class QuizController {
     	
         // Obtener el objeto Resultado de la sesión
         Resultado resultado = obtenerResultado(session);
+        
+        // Verificar si el jugador ya existe en la base de datos
+        Optional<Jugador> jugadorOptional = jugadorRepository.findByNombre(nombre);
 
-        // Actualizar el nombre en el objeto Resultado
-        resultado.setNombre(nombre);
-        // Agregar el objeto Resultado actualizado al modelo
-        model.addAttribute("resultado", resultado);
+        if (jugadorOptional.isPresent()) {
+            // Si el jugador ya existe, asociar la puntuación al jugador existente:
+            Jugador jugadorExistente = jugadorOptional.get();
+            resultado.setJugador(jugadorExistente);
+        } else {
+            // Si el jugador no existe, crear un nuevo jugador y asociar la puntuación
+            Jugador nuevoJugador = new Jugador();
+            nuevoJugador.setNombre(nombre);
+            nuevoJugador.getPuntuaciones().add(resultado);
+            jugadorRepository.save(nuevoJugador);
+            resultado.setJugador(nuevoJugador);
+        }
         
         // Guardar el resultado en el repositorio con .save:
         resultadoRepositorio.save(resultado);
-
-        // Obtener todos los resultados del repositorio con .findAll():
-        List<Resultado> todosLosResultados = resultadoRepositorio.findAll();
 
         // Seleccionar los últimos 5 resultados (o menos si hay menos de 5)
         List<Resultado> ultimosResultados = resultadoRepositorio.Ultimos5Resultados();
 
         // Agregar la lista de últimos resultados al modelo
         model.addAttribute("ultimosResultados", ultimosResultados);
-        
+        model.addAttribute(resultado)
+;        
         return "finalResultado";
     }
 

@@ -35,7 +35,7 @@
     <tbody>
         <!-- For each sobre la lista de resultados -->
         <tr th:each="resultado : ${ultimosResultados}">
-            <td th:text="${resultado.nombre}" />
+            <td th:text="${resultado.jugador?.nombre}" />
             <td th:text="${resultado.puntos}" />
             <td th:text="${resultado.clasificacion}" />
         </tr>
