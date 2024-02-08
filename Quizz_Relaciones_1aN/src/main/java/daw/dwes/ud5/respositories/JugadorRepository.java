@@ -11,6 +11,5 @@ import daw.dwes.ud5.entities.Jugador;
 public interface JugadorRepository extends JpaRepository<Jugador, Long>{
 	
 	 Optional<Jugador> findByNombre(String nombre);
-	 
-
+	
 }

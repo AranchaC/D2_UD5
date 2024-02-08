@@ -21,6 +21,8 @@ import daw.dwes.ud5.entities.Resultado;
 import daw.dwes.ud5.entities.Jugador;
 import daw.dwes.ud5.respositories.JugadorRepository;
 import daw.dwes.ud5.respositories.ResultadoRepository;
+import daw.dwes.ud5.services.ClasificacionService;
+import daw.dwes.ud5.services.ResultadoService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -29,12 +31,19 @@ public class QuizController {
     private final ResultadoRepository resultadoRepositorio;
     private final JugadorRepository jugadorRepository;
     
+    private final ResultadoService resultadoService;
+    private final ClasificacionService clasificacionService;
+    
     @Autowired
     public QuizController(
     		ResultadoRepository resultadoRepositorio,
-    		JugadorRepository jugadorRepository) {
+    		JugadorRepository jugadorRepository,
+    		ResultadoService resultadoService, 
+    		ClasificacionService clasificacionService) {
     	this.resultadoRepositorio = resultadoRepositorio;
     	this.jugadorRepository = jugadorRepository;
+        this.resultadoService = resultadoService;
+        this.clasificacionService = clasificacionService;
     }
 	
 	@GetMapping("/")
@@ -70,7 +79,7 @@ public class QuizController {
         }
 
         // Obtener el objeto Resultado de la sesión
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
 
         // Actualizar los puntos acumulados en el objeto Resultado
         resultado.setPuntos(resultado.getPuntos() + puntos);
@@ -95,7 +104,7 @@ public class QuizController {
         }
 
         // Actualizar la sesión con los puntos obtenidos
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         resultado.setPuntos(resultado.getPuntos() + puntos);
         model.addAttribute("resultado", resultado);
 
@@ -122,7 +131,7 @@ public class QuizController {
         } 
 
         // Actualizar la sesión con los puntos obtenidos
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         resultado.setPuntos(resultado.getPuntos() + puntos);
         model.addAttribute("resultado", resultado);
 
@@ -158,7 +167,7 @@ public class QuizController {
         }
 
         // Actualizar la sesión con los puntos obtenidos
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         resultado.setPuntos(resultado.getPuntos() + puntos);
         model.addAttribute("resultado", resultado);
 
@@ -187,7 +196,7 @@ public class QuizController {
         }
 
         // Actualizar la sesión con los puntos obtenidos
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         resultado.setPuntos(resultado.getPuntos() + puntos);
         model.addAttribute("resultado", resultado);
 
@@ -215,7 +224,7 @@ public class QuizController {
 
         // Obtener el objeto Resultado de la sesión
         // y actualizo los puntos
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         resultado.setPuntos(resultado.getPuntos() + puntos);
         model.addAttribute("resultado", resultado);
 
@@ -247,15 +256,16 @@ public class QuizController {
             default:
                 // para valores no esperados
                 break;
-        }
+        }//switch
 
         // Actualizar la sesión con los puntos obtenidos
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         resultado.setPuntos(resultado.getPuntos() + puntos);
         model.addAttribute("resultado", resultado);
         
         // y actualizamos la clasificación, accediendo a los puntos:
-        resultado.setClasificacion(calcularClasificacion(resultado.getPuntos()));
+        resultado.setClasificacion(clasificacionService.calcularClasificacion
+        		(resultado.getPuntos()));
 
         return "paginaNombre";
     }//pregunta7
@@ -267,7 +277,7 @@ public class QuizController {
             Model model) {
     	
         // Obtener el objeto Resultado de la sesión
-        Resultado resultado = obtenerResultado(session);
+        Resultado resultado = resultadoService.obtenerResultado(session);
         
         // Verificar si el jugador ya existe en la base de datos
         Optional<Jugador> jugadorOptional = jugadorRepository.findByNombre(nombre);
@@ -283,7 +293,7 @@ public class QuizController {
             nuevoJugador.getPuntuaciones().add(resultado);
             jugadorRepository.save(nuevoJugador);
             resultado.setJugador(nuevoJugador);
-        }
+        }//if-Else
         
         // Guardar el resultado en el repositorio con .save:
         resultadoRepositorio.save(resultado);
@@ -293,85 +303,9 @@ public class QuizController {
 
         // Agregar la lista de últimos resultados al modelo
         model.addAttribute("ultimosResultados", ultimosResultados);
-        model.addAttribute(resultado)
-;        
+        model.addAttribute(resultado);        
         return "finalResultado";
-    }
-
-    
-    private Resultado obtenerResultado(HttpSession session) {
-    	Resultado resultado = (Resultado) session.getAttribute("resultado");
-        // Si no existe en la sesión, crear uno nuevo y se guarda en la sesión:
-    	if (resultado == null) {
-            resultado = new Resultado();
-            session.setAttribute("resultado", resultado);
-        }
-        return resultado;
-    }//obtenerResultado
-    
-    private Clasificacion calcularClasificacion(int puntos) {
-        // determinar la clasificación según los puntos
-        if (puntos >= 20) {
-            return Clasificacion.GRYFFINDOR;
-        } else if (puntos >= 15) {
-            return Clasificacion.RAVENCLAW;
-        } else if (puntos >= 10) {
-            return Clasificacion.SLYTHERIN;
-        } else {
-            return Clasificacion.HUFFLEPUFF;
-        }
-    }//calcularClasif
-    
-    // MÉTODOS CONSULTAS SQL //
-    
-    @GetMapping("/resultados")
-    public List<Resultado> obtenerTodosLosResultados(){
-    	return resultadoRepositorio.findAll();
-    }//ObtenerTodos
-    
-    @GetMapping("/resultados/{id}")
-    public Optional<Resultado> buscarResultadoId(@PathVariable ("id") Long id){
-    	return resultadoRepositorio.findById(id);
-    }//BuscarId
-    
-    
-    @PostMapping("/resultados")
-    public Resultado agregarResultado(@RequestBody Resultado nuevoResultado) {
-        return resultadoRepositorio.save(nuevoResultado);
-    }//agregar
-    
-    @DeleteMapping("/resultados/{id}")
-    public ResponseEntity<Object> eliminarResultado(@PathVariable ("id") Long id) {
-        Optional<Resultado> resultadoOptional = resultadoRepositorio.findById(id);
-
-        if (!resultadoOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        resultadoRepositorio.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }//eleminar
-    
-    @PutMapping("/resultados/{id}")
-    public ResponseEntity<Object> actualizarResultado(
-    		@PathVariable (name="id") Long id, 
-    		@RequestBody Resultado resultadoActualizado) {
-        Optional<Resultado> resultadoOptional = resultadoRepositorio.findById(id);
-
-        if (!resultadoOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        resultadoActualizado.setId(id); 
-        resultadoRepositorio.save(resultadoActualizado);
-        return ResponseEntity.noContent().build();
-    }//actualizar
-    
-    @GetMapping("/resultados/count")
-    public ResponseEntity<?> contarResultados() {
-        long totalResultados = resultadoRepositorio.count();
-        return ResponseEntity.ok("Número de resultados en la BBDD: " 
-        		+ totalResultados);
-    }//contar
-
-}
+    }//paginaNombre
+  
+}//quizzMain
 
