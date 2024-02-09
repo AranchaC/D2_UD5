@@ -1,5 +1,6 @@
 package daw.dwes.ud5.controllers;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -278,6 +279,9 @@ public class QuizController {
     	
         // Obtener el objeto Resultado de la sesión
         Resultado resultado = resultadoService.obtenerResultado(session);
+        
+        // Establecer la fecha actual
+        resultado.setFecha(new Date());
         
         // Verificar si el jugador ya existe en la base de datos
         Optional<Jugador> jugadorOptional = jugadorRepository.findByNombre(nombre);

@@ -23,13 +23,20 @@
 
 <a th:href="@{/}"><button class="botonIniciar">Volver a empezar</button></a>
 
-<h3>Últimos 5 Resultados</h3>
+<!-- Agregar un formulario para filtrar por jugador -->
+<form th:action="@{/resultados/filtrar}" method="get">
+    <label for="nombreJugador">Filtrar por jugador:</label>
+    <input type="text" id="nombreJugador" name="nombreJugador">
+    <button type="submit">Filtrar</button>
+</form>
+
 <table border="1">
     <thead>
         <tr>
             <th>Nombre</th>
             <th>Puntos</th>
             <th>Clasificación</th>
+            <th>Fecha</th>
         </tr>
     </thead>
     <tbody>
@@ -38,6 +45,7 @@
             <td th:text="${resultado.jugador?.nombre}" />
             <td th:text="${resultado.puntos}" />
             <td th:text="${resultado.clasificacion}" />
+            <td th:text="${#dates.format(resultado.fecha, 'dd-MM HH:mm')}" />
         </tr>
     </tbody>
 </table>
@@ -73,7 +81,7 @@
 			text-shadow: 0 0 5px black ;		
 		}
 		
-		h2, h3 {
+		h2, h3, label {
 			color: white;
 			font-weight: bold;
 			text-shadow: 0 0 5px black ;	
