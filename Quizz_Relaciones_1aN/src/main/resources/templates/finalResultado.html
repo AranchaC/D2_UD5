@@ -25,9 +25,9 @@
 
 <!-- Agregar un formulario para filtrar por jugador -->
 <form th:action="@{/finalResultado}" method="post">
-    <label for="nombreJugador">Filtrar por jugador:</label>
-    <input type="text" id="nombreJugador" name="nombreJugador">
-    <button type="submit">Filtrar</button>
+    <label for="nombre" >Ver resultados por jugador:</label>
+    <input type="text" id="nombre" name="nombre" placeholder="Pon el nombre">
+    <button type="submit" class="botonF">Filtrar</button>
 </form>
 
 <table border="1">
@@ -107,6 +107,15 @@
 	    tr:nth-child(even) {
 	        background-color: #f2f2f2;
 	    }
+	    
+	    .botonF {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 5px 5px;
+            border-radius: 4px;
+			font-weight: bold;
+        }
 	    
 	    .botonIniciar {
             background-color: #4caf50;

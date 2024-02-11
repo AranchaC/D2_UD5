@@ -112,7 +112,6 @@ public class QuizController {
         return "pregunta3";
     }
     
-
     @PostMapping("/pregunta3")
     public String pregunta3(
     		@RequestParam(name = "respuesta") String respuesta, 
@@ -139,7 +138,6 @@ public class QuizController {
         return "pregunta4";
     }//preg3
     
-
     @PostMapping("/pregunta4")
     public String pregunta4(
             @RequestParam(name = "respuesta") String respuesta,
@@ -317,7 +315,7 @@ public class QuizController {
     		Model model) {
         // Buscar resultados por nombre de jugador
         List<Resultado> resultadosFiltrados = 
-        		resultadoRepository.findByJugadorNombre(nombre);
+        		resultadoRepository.findTop5ByJugadorNombreOrderByPuntosDesc(nombre);
         
         //comentar error de hacerlo con optional:
 

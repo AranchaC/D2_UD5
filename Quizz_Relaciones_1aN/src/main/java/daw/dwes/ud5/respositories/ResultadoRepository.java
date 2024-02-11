@@ -12,5 +12,5 @@ public interface ResultadoRepository extends JpaRepository<Resultado, Long>{
     @Query("SELECT r FROM Resultado r ORDER BY r.fecha DESC LIMIT 5")
     List<Resultado> Ultimos5Resultados();
     
-    List<Resultado> findByJugadorNombre(String nombre);	
+    List<Resultado> findTop5ByJugadorNombreOrderByPuntosDesc(String nombre);	
 }

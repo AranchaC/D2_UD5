@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<h2>Resultados del Jugador <span class="nombre" th:text="${param.nombreJugador}"></span></h2>
+<h2>Resultados del Jugador <span class="nombre" th:text="${param.nombre}"></span></h2>
 
 <!-- Verificar si hay un mensaje -->
 <div th:if="${mensaje != null}">
@@ -28,7 +28,7 @@
         <tr th:each="resultado : ${resultadosFiltrados}">
             <td th:text="${resultado.puntos}" />
             <td th:text="${resultado.clasificacion}" />
-            <td th:text="${#dates.format(resultado.fecha, 'HH:mm dd-MM')}" />
+            <td th:text="${#dates.format(resultado.fecha, 'HH:mm a dd-MMM')}" />
         </tr>
     </tbody>
 </table>
@@ -36,10 +36,10 @@
 
 <br>
 <a th:href="@{/}"><button class="botonIniciar">Volver a empezar</button></a>
-    <a th:href="@{/finalResultado}"><button class="botonMostrarTodos">Mostrar todos los resultados</button></a>
     <form th:action="@{/finalResultado}" method="post">
+		<label for="nombre" >Ver resultados de otro jugador:</label>
         <input type="text" name="nombre" placeholder="Nombre del jugador">
-        <button type="submit" class="botonFiltrar">Filtrar por nombre</button>
+        <button type="submit" class="botonF">Filtrar</button>
     </form>
 
 <style>
@@ -65,7 +65,7 @@
         
         .nombre{
 			color: #4caf50;
-			text-shadow: 0 0 5px black ;	
+			text-shadow: 0 0 8px black ;	
 			text-transform: uppercase;
 		}
         
@@ -83,7 +83,7 @@
 		h2, h3, label {
 			color: white;
 			font-weight: bold;
-			text-shadow: 0 0 5px black ;	
+			text-shadow: 0 0 8px black ;	
 		}
 		
 		table {
@@ -110,6 +110,15 @@
 	    tr:nth-child(even) {
 	        background-color: #f2f2f2;
 	    }
+	    
+	    .botonF {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 5px 5px;
+            border-radius: 4px;
+			font-weight: bold;
+        }
 	    
 	    .botonIniciar, .botonAnterior {
             background-color: #4caf50;
