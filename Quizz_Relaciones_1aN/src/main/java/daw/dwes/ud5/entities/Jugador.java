@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "jugador")
-public class Jugador {
+public class Jugador implements Comparable<Jugador> {
 	
     private String nombre;
     
@@ -51,6 +51,12 @@ public class Jugador {
 	public List<Resultado> getPuntuaciones() {
 		// TODO Auto-generated method stub
 		return puntuaciones;
+	}
+
+	@Override
+	public int compareTo(Jugador otroJugador) {
+		
+		return 0;
 	}
 
 }

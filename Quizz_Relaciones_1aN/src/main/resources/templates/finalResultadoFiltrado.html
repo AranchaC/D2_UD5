@@ -3,55 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finalizar Quiz</title>
+    <title>Resultados Filtrados</title>
 </head>
 <body>
 
-<h2>¡Quiz Finalizado!</h2>
-<p th:text="'Has sido seleccionado para la casa  ' + ${resultado.clasificacion} + 
-	' y has conseguido ' + ${resultado.puntos} + ' puntos.'" /p>
-    
-<!-- Verificar si resultado y resultado.clasificacion no son nulos -->
-<div th:if="${resultado != null and resultado.clasificacion != null}">
-    <!-- Condición para mostrar imágenes según la clasificación -->
-    <img th:if="${resultado.clasificacion.toString() == 'GRYFFINDOR'}" src="/images/gryf.jpg" width="350" />
-    <img th:if="${resultado.clasificacion.toString() == 'RAVENCLAW'}" src="/images/raven.jpg" width="350"/>
-    <img th:if="${resultado.clasificacion.toString() == 'SLYTHERIN'}" src="/images/slyth.jpg" width="350" />
-    <img th:if="${resultado.clasificacion.toString() == 'HUFFLEPUFF'}" src="/images/huff.jpg" width="350" />
-	
+<h2>Resultados del Jugador <span class="nombre" th:text="${param.nombreJugador}"></span></h2>
+
+<!-- Verificar si hay un mensaje -->
+<div th:if="${mensaje != null}">
+    <p th:text="${mensaje}" />
 </div>
 
-<a th:href="@{/}"><button class="botonIniciar">Volver a empezar</button></a>
-
-<!-- Agregar un formulario para filtrar por jugador -->
-<form th:action="@{/finalResultado}" method="post">
-    <label for="nombreJugador">Filtrar por jugador:</label>
-    <input type="text" id="nombreJugador" name="nombreJugador">
-    <button type="submit">Filtrar</button>
-</form>
-
-<table border="1">
+<div class="tabla" th:if="${mensaje == null}">
+	<table border="1">
     <thead>
         <tr>
-            <th>Nombre</th>
             <th>Puntos</th>
             <th>Clasificación</th>
-            <th>Hora y fecha</th>
+            <th>Hora y Fecha</th>
         </tr>
     </thead>
     <tbody>
-        <!-- For each sobre la lista de resultados -->
-        <tr th:each="resultado : ${ultimosResultados}">
-            <td th:text="${resultado.jugador.nombre}" />
+        <!-- For each sobre la lista de resultadosFiltrados -->
+        <tr th:each="resultado : ${resultadosFiltrados}">
             <td th:text="${resultado.puntos}" />
             <td th:text="${resultado.clasificacion}" />
-            <td th:text="${#dates.format(resultado.fecha, 'HH:mm a dd-MMM')}" />
+            <td th:text="${#dates.format(resultado.fecha, 'HH:mm dd-MM')}" />
         </tr>
     </tbody>
 </table>
+</div>
+
+<br>
+<a th:href="@{/}"><button class="botonIniciar">Volver a empezar</button></a>
+    <a th:href="@{/finalResultado}"><button class="botonMostrarTodos">Mostrar todos los resultados</button></a>
+    <form th:action="@{/finalResultado}" method="post">
+        <input type="text" name="nombre" placeholder="Nombre del jugador">
+        <button type="submit" class="botonFiltrar">Filtrar por nombre</button>
+    </form>
 
 <style>
-			* {
+	
+		* {
 		    -webkit-box-sizing: border-box;
 		    box-sizing: border-box;
 		    margin: 0;
@@ -69,6 +62,12 @@
             gap: 15px;
             margin: 15px;
         }
+        
+        .nombre{
+			color: #4caf50;
+			text-shadow: 0 0 5px black ;	
+			text-transform: uppercase;
+		}
         
         img {
 			box-shadow: 0 0 20px rgba(255, 255, 255, 2);
@@ -88,11 +87,15 @@
 		}
 		
 		table {
-	        width: 40%;
+	        width: 100%;
 	        border-collapse: collapse;
 	        background-color: white;
 	        box-shadow: 0 0 20px rgba(255, 255, 255, 2);
   		}
+  		
+  		.tabla {
+			  width: 30%;
+		  }
 
 	    th, td {
 	        padding: 10px;
@@ -108,7 +111,7 @@
 	        background-color: #f2f2f2;
 	    }
 	    
-	    .botonIniciar {
+	    .botonIniciar, .botonAnterior {
             background-color: #4caf50;
             color: #fff;
             border: none;
@@ -121,7 +124,7 @@
         .botonIniciar:hover {
             background-color: rgb(0, 64, 0);
         }
-        
+	
 </style>
 
 </body>

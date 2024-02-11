@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class QuizController {
 	
-    private final ResultadoRepository resultadoRepositorio;
+    private final ResultadoRepository resultadoRepository;
     private final JugadorRepository jugadorRepository;
     
     private final ResultadoService resultadoService;
@@ -37,11 +37,11 @@ public class QuizController {
     
     @Autowired
     public QuizController(
-    		ResultadoRepository resultadoRepositorio,
+    		ResultadoRepository resultadoRepository,
     		JugadorRepository jugadorRepository,
     		ResultadoService resultadoService, 
     		ClasificacionService clasificacionService) {
-    	this.resultadoRepositorio = resultadoRepositorio;
+    	this.resultadoRepository = resultadoRepository;
     	this.jugadorRepository = jugadorRepository;
         this.resultadoService = resultadoService;
         this.clasificacionService = clasificacionService;
@@ -300,16 +300,38 @@ public class QuizController {
         }//if-Else
         
         // Guardar el resultado en el repositorio con .save:
-        resultadoRepositorio.save(resultado);
+        resultadoRepository.save(resultado);
 
         // Seleccionar los últimos 5 resultados (o menos si hay menos de 5)
-        List<Resultado> ultimosResultados = resultadoRepositorio.Ultimos5Resultados();
+        List<Resultado> ultimosResultados = resultadoRepository.Ultimos5Resultados();
 
         // Agregar la lista de últimos resultados al modelo
         model.addAttribute("ultimosResultados", ultimosResultados);
         model.addAttribute(resultado);        
         return "finalResultado";
     }//paginaNombre
+    
+    @PostMapping("/finalResultado")
+    public String finalResultado(
+    		@RequestParam(name = "nombre")String nombre,
+    		Model model) {
+        // Buscar resultados por nombre de jugador
+        List<Resultado> resultadosFiltrados = 
+        		resultadoRepository.findByJugadorNombre(nombre);
+        
+        //comentar error de hacerlo con optional:
+
+        if (resultadosFiltrados.isEmpty()) {
+            // Si no se encuentran resultados, mostrar un mensaje de alerta
+            model.addAttribute("mensaje", "No se encontraron resultados para el jugador " + nombre);
+        } else {
+            // Si se encuentran resultados, agregarlos al modelo
+            model.addAttribute("resultadosFiltrados", resultadosFiltrados);
+
+        }//ifElse
+
+        return "finalResultadoFiltrado";
+    }//finalResultado
   
 }//quizzMain
 

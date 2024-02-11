@@ -9,7 +9,8 @@ import daw.dwes.ud5.entities.Resultado;
 
 public interface ResultadoRepository extends JpaRepository<Resultado, Long>{
 	
-    @Query("SELECT r FROM Resultado r ORDER BY r.id DESC LIMIT 5")
+    @Query("SELECT r FROM Resultado r ORDER BY r.fecha DESC LIMIT 5")
     List<Resultado> Ultimos5Resultados();
-	
+    
+    List<Resultado> findByJugadorNombre(String nombre);	
 }
