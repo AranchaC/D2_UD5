@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "jugador")
-public class Jugador implements Comparable<Jugador> {
+public class Jugador {
 	
     private String nombre;
     
@@ -23,14 +23,19 @@ public class Jugador implements Comparable<Jugador> {
 	@Column(name = "jugador_id")
 	private long id;
 	
-    // Relación uno a muchos con Puntuacion:
+    // Relación uno a muchos con Resultados:
 	// Un jugador puede tener muchas puntuaciones.
 	// mappedBy para que sea bidireccional
     @OneToMany(
     		mappedBy = "jugador", 
     		cascade = CascadeType.ALL,
     		orphanRemoval = true)
-    private List<Resultado> puntuaciones = new ArrayList<>();
+    private List<Resultado> resultados = new ArrayList<>();
+    
+	public List<Resultado> getResultados() {
+		// TODO Auto-generated method stub
+		return resultados;
+	}
 
     public long getId() {
 		return id;
@@ -48,15 +53,6 @@ public class Jugador implements Comparable<Jugador> {
 		this.nombre = nombre;
 	}
 
-	public List<Resultado> getPuntuaciones() {
-		// TODO Auto-generated method stub
-		return puntuaciones;
-	}
 
-	@Override
-	public int compareTo(Jugador otroJugador) {
-		
-		return 0;
-	}
 
 }

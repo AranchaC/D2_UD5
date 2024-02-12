@@ -292,7 +292,7 @@ public class QuizController {
             // Si el jugador no existe, crear un nuevo jugador y asociar la puntuación
             Jugador nuevoJugador = new Jugador();
             nuevoJugador.setNombre(nombre);
-            nuevoJugador.getPuntuaciones().add(resultado);
+            nuevoJugador.getResultados().add(resultado);
             jugadorRepository.save(nuevoJugador);
             resultado.setJugador(nuevoJugador);
         }//if-Else
@@ -315,7 +315,7 @@ public class QuizController {
     		Model model) {
         // Buscar resultados por nombre de jugador
         List<Resultado> resultadosFiltrados = 
-        		resultadoRepository.findTop5ByJugadorNombreOrderByPuntosDesc(nombre);
+        		resultadoRepository.findByJugadorNombreOrderByPuntosDesc(nombre);
         
         //comentar error de hacerlo con optional:
 
