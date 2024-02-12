@@ -315,7 +315,7 @@ public class QuizController {
     		Model model) {
         // Buscar resultados por nombre de jugador
         List<Resultado> resultadosFiltrados = 
-        		resultadoRepository.findByJugadorNombreOrderByPuntosDesc(nombre);
+        		resultadoRepository.findTop5ByJugadorNombreOrderByPuntosDesc(nombre);
         
         //comentar error de hacerlo con optional:
 
